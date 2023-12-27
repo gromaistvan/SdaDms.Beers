@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SdaDms.Beers": {
+      "commandName": "Project",
+      "commandLineArgs": "--Background aqua"
+    }
+  }
+}
