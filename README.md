@@ -6,14 +6,14 @@ Sörnyilvántartás konzolból. Kilépéshez használja a Ctrl+C billentyű komb
 
 ```
 USAGE:
-    SdaDms.Beers.dll [OPTIONS]
+    SdaDms.Beers.exe [OPTIONS]
 
 OPTIONS:
                         DEFAULT
     -h, --help                                              Prints help information
     -v, --version                                           Prints version information
-    -s, --service       https://api.punkapi.com/v2/beers
-    -b, --background    default
+    -s, --service       https://api.punkapi.com/v2/beers    Service URL
+    -b, --background    default                             Background color
 ```
 
 ## Választás
