@@ -28,7 +28,7 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
         public Color Background => Style.TryParse($"default on {BackgroundName}", out Style? style) ? style?.Background ?? Color.Default : Color.Default;
 
         public Color Foreground => Background.Blend(Color.Yellow, 1f);
-        
+
         public Uri ServiceUrl => new (ServicePath);
     }
 
@@ -96,7 +96,7 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
         Markup nameText = new Markup($"[bold]{beer.Name}[/]").Centered();
         Markup taglineText = new Markup($"{beer.Tagline}").Ellipsis();
         Markup descriptionText = new Markup($"{beer.Description}").Ellipsis();
-        BarChart bitternessChart = new BarChart().WithMaxValue(120.0).AddItem(Resources.IBU, beer.Ibu ?? 0.0, settings.Foreground);
+        BarChart bitternessChart = new BarChart().WithMaxValue(150.0).AddItem(Resources.IBU, beer.Ibu ?? 0.0, settings.Foreground);
         Table maltTable = new Table()
             .AddColumn(Resources.Ingredient)
             .AddColumn(Resources.Amount, c => c.RightAligned())

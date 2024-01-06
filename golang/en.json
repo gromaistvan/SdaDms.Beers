@@ -1,0 +1,14 @@
+{
+    "list.title": "Choose a beer",
+    "name.title": "Name",
+    "tagline.title": "Tagline",
+    "description.title": "Description",
+    "ibu.title": "IBU",
+    "image.title": "Image",
+    "ingredients": {
+        "title": "Ingredients",
+        "malt": "Malt",
+        "amount": "Amount",
+        "unit": "Unit"
+    }
+}
