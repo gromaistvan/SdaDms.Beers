@@ -12,11 +12,12 @@
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest-all</AnalysisLevel>
     <NeutralLanguage>en</NeutralLanguage>
+    <InvariantGlobalization>false</InvariantGlobalization>
     <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.48.0" />
     <PackageReference Include="Spectre.Console.Analyzer" Version="0.48.0">
@@ -32,9 +33,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Properties\Resources.hu.resx">
-      <Generator></Generator>
-    </EmbeddedResource>
+    <EmbeddedResource Update="Properties\Resources.hu.resx" />
   </ItemGroup>
 
   <ItemGroup>

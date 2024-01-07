@@ -1,15 +1,25 @@
 {
     "title": "Ctrl+C a kilépéshez",
-    "list.title": "Válassz egy sört",
-    "name.title": "Sör neve",
-    "tagline.title": "Szlogen",
-    "description.title": "Részletes leírás",
+    "list": {
+        "title": "Válassz egy sört"
+    },
+    "name": {
+        "title": "Sör neve"
+    },
+    "tagline": {
+        "title": "Szlogen"
+    },
+    "description": {
+        "title": "Részletes leírás"
+    },
     "ibu": {
         "title": "Keserűség",
         "unit": "IBU"
     },
-    "image.title": "Kép",
-    "ingredients":{
+    "image": {
+        "title": "Kép"
+    },
+    "ingredients": {
         "title": "Maláta összetétele",
         "malt": "Összetevő",
         "amount": "Mennyiség",

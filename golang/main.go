@@ -7,12 +7,12 @@ import (
 )
 
 func main() {
+	config := loadConfig()
+
 	if err := ui.Init(); err != nil {
 		log.Fatalf("Failed to initialize termui: %v", err)
 	}
 	defer ui.Close()
-
-	config := loadConfig()
 	screen := newScreen(*config)
 	err := screen.draw(home)
 	if err != nil {

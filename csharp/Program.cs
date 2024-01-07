@@ -23,20 +23,20 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
 
     public sealed class Settings: CommandSettings
     {
-        [CommandOption("-s|--service"), DefaultValue("https://api.punkapi.com/v2/beers"), Description("Service URL.")]
+        [CommandOption("-s|--service"), DefaultValue("https://api.punkapi.com/v2/beers"), Description("Service URL")]
         public string ServicePath { get; init; } = "https://api.punkapi.com/v2/beers";
 
-        [CommandOption("-b|--background"), DefaultValue("default"), Description("Background color.")]
+        [CommandOption("-b|--background"), DefaultValue("default"), Description("Background color")]
         public string BackgroundName { get; init; } = "default";
 
-        [CommandOption("-l|--langugage"), DefaultValue(null), Description("UI langugae.")]
+        [CommandOption("-l|--langugage"), DefaultValue(null), Description("UI language")]
         public string? LanguageAlpha2 { get; init; } = null;
 
         public Color Background => Style.TryParse($"default on {BackgroundName}", out Style? style) ? style?.Background ?? Color.Default : Color.Default;
 
         public Color Foreground => Background.Blend(Color.Yellow, 1f);
 
-        public CultureInfo Language => LanguageAlpha2 is { Length: 2 } ? CultureInfo.GetCultureInfoByIetfLanguageTag(LanguageAlpha2) : CultureInfo.CurrentUICulture;
+        public CultureInfo Language => LanguageAlpha2 is { Length: 2 } ? new CultureInfo(LanguageAlpha2) : CultureInfo.CurrentUICulture;
 
         public Uri ServiceUrl => new (ServicePath);
     }
@@ -67,16 +67,14 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
 
     private static readonly JsonSerializerOptions JsonOptions = new () { PropertyNameCaseInsensitive = true };
 
-    private static async Task<List<Beer>> LoadAsync(Settings settings, CancellationToken token = default)
-    {
-        return await AnsiConsole.Status().Spinner(Spinner.Known.Dots).StartAsync(Resources.Loading, async ctx =>
+    private static async Task<List<Beer>> LoadAsync(Settings settings, CancellationToken token = default) =>
+        await AnsiConsole.Status().Spinner(Spinner.Known.Dots).StartAsync(Resources.Loading, async ctx =>
         {
             using HttpClient client = new ();
             Stream response = await client.GetStreamAsync(settings.ServiceUrl, token).ConfigureAwait(false);
             await using ConfiguredAsyncDisposable _ = response.ConfigureAwait(false);
             return await JsonSerializer.DeserializeAsync<List<Beer>>(response, JsonOptions, token).ConfigureAwait(false) ?? [];
         }).ConfigureAwait(false);
-    }
 
     private static async Task<Beer?> ChooseAsync(IList<Beer>? beers, Settings settings, CancellationToken token = default)
     {
@@ -133,7 +131,7 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
         }
         using HttpClient client = new ();
         byte[] imageResponse = beer.Image is null ? [] : await client.GetByteArrayAsync(new Uri(beer.Image), token).ConfigureAwait(false);
-        IRenderable image = imageResponse.Length == 0 
+        IRenderable image = imageResponse.Length == 0
             ? new Text("")
             : Align.Center(new CanvasImage(imageResponse).Mutate(ctx => ctx.Resize(new ResizeOptions
             {
@@ -212,10 +210,10 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(settings);
-
         CultureInfo.CurrentUICulture = Resources.Culture = settings.Language;
         await CtrlBreakAsync(async token =>
         {
+            AnsiConsole.Clear();
             IList<Beer> beers = await LoadAsync(settings, token).ConfigureAwait(false);
             for (Beer? beer = await ChooseAsync(beers, settings, token).ConfigureAwait(false);
                  beer is not null;

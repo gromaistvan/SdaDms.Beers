@@ -1,11 +1,24 @@
 {
     "title": "Ctrl+C to exit",
-    "list.title": "Choose a beer",
-    "name.title": "Name",
-    "tagline.title": "Tagline",
-    "description.title": "Description",
-    "ibu.title": "IBU",
-    "image.title": "Image",
+    "list": {
+        "title": "Choose a beer"
+    },
+    "name": {
+        "title": "Name"
+    },
+    "tagline": {
+        "title": "Tagline"
+    },
+    "description": {
+        "title": "Description"
+    },
+    "ibu": {
+        "title": "Bitterness",
+        "unit": "IBU"
+    },
+    "image": {
+        "title": "Image"
+    },
     "ingredients": {
         "title": "Ingredients",
         "malt": "Malt",

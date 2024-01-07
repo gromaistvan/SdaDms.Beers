@@ -16,14 +16,14 @@ type config struct {
 
 func loadConfig() *config {
 	var url string
-	flag.StringVar(&url, "url", "https://api.punkapi.com/v2/beers", "The URL to fetch")
-	flag.StringVar(&url, "u", "https://api.punkapi.com/v2/beers", "The URL to fetch (sorthand)")
+	flag.StringVar(&url, "url", "https://api.punkapi.com/v2/beers", "Service URL")
+	flag.StringVar(&url, "u", "https://api.punkapi.com/v2/beers", "Service URL (sorthand)")
 	var background string
-	flag.StringVar(&background, "background", "", "The background color")
-	flag.StringVar(&background, "b", "", "The background color (shorthand)")
+	flag.StringVar(&background, "background", "", "Background color")
+	flag.StringVar(&background, "b", "", "Background color (shorthand)")
 	var languageName string
-	flag.StringVar(&languageName, "language", "en", "UI langugage")
-	flag.StringVar(&languageName, "l", "en", "UI langugage (shorthand)")
+	flag.StringVar(&languageName, "language", "en", "UI language")
+	flag.StringVar(&languageName, "l", "en", "UI language (shorthand)")
 	flag.Parse()
 	var backgroundColor ui.Color
 	switch background {
