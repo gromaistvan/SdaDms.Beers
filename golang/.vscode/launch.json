@@ -11,7 +11,7 @@
             "mode": "auto",
             "cwd": "${workspaceRoot}",
             "program": "${workspaceFolder}",
-            "args": ["-language=hu"],
+            "args": ["-l=hu"],
             "trace": "verbose",
             "console": "externalTerminal",
         }

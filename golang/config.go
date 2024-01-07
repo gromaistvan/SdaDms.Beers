@@ -15,35 +15,41 @@ type config struct {
 }
 
 func loadConfig() *config {
-	urlFlag := flag.String("url", "https://api.punkapi.com/v2/beers", "The URL to fetch.")
-	bgFlag := flag.String("background", "", "The background color.")
-	langFlag := flag.String("language", "en", "UI langugage.")
+	var url string
+	flag.StringVar(&url, "url", "https://api.punkapi.com/v2/beers", "The URL to fetch")
+	flag.StringVar(&url, "u", "https://api.punkapi.com/v2/beers", "The URL to fetch (sorthand)")
+	var background string
+	flag.StringVar(&background, "background", "", "The background color")
+	flag.StringVar(&background, "b", "", "The background color (shorthand)")
+	var languageName string
+	flag.StringVar(&languageName, "language", "en", "UI langugage")
+	flag.StringVar(&languageName, "l", "en", "UI langugage (shorthand)")
 	flag.Parse()
-	var background ui.Color
-	switch *bgFlag {
+	var backgroundColor ui.Color
+	switch background {
 	case "black":
-		background = ui.ColorBlack
+		backgroundColor = ui.ColorBlack
 	case "red":
-		background = ui.ColorRed
+		backgroundColor = ui.ColorRed
 	case "green":
-		background = ui.ColorGreen
+		backgroundColor = ui.ColorGreen
 	case "yellow":
-		background = ui.ColorYellow
+		backgroundColor = ui.ColorYellow
 	case "blue":
-		background = ui.ColorBlue
+		backgroundColor = ui.ColorBlue
 	case "magenta":
-		background = ui.ColorMagenta
+		backgroundColor = ui.ColorMagenta
 	case "cyan":
-		background = ui.ColorCyan
+		backgroundColor = ui.ColorCyan
 	case "white":
-		background = ui.ColorWhite
+		backgroundColor = ui.ColorWhite
 	default:
-		background = ui.ColorClear
+		backgroundColor = ui.ColorClear
 	}
-	lang, err := language.Parse(*langFlag)
+	tag, err := language.Parse(languageName)
 	if err != nil {
 		log.Printf("Error parsing language flag: %v. Defaulting to English.", err)
-		lang = language.English
+		tag = language.English
 	}
-	return &config{URL: *urlFlag, Background: background, Language: lang}
+	return &config{URL: url, Background: backgroundColor, Language: tag}
 }

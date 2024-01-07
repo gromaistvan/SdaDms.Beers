@@ -13,6 +13,20 @@
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
-            "console": "externalTerminal"
-        }]
+            "console": "externalTerminal",
+            "logging": {
+                "moduleLoad": false,
+                "processExit": false,
+                "threadExit": false,
+                "elapsedTiming": false,
+                "consoleUsageMessage": false,
+                "programOutput": false,
+                "console": false,
+                "exceptions": true,
+                "diagnosticsLog": {
+                    "level": "information"
+                }
+            },
+        }
+    ]
 }

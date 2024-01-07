@@ -200,6 +200,7 @@ func (sc screen) drawImage() ui.Drawable {
 }
 
 func (sc *screen) draw(location location) error {
+	setConsoleTitle(sc.Resources.get("title"))
 	switch location {
 	case up:
 		sc.prev()

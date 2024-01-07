@@ -1,3 +1,5 @@
+#pragma warning disable CA1812
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -49,7 +51,7 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
         public double? Ibu { get; init; }
 
         public Ingredients? Ingredients { get; init; }
-        
+
         [JsonPropertyName("image_url")]
         public string? Image { get; init; }
     }
@@ -159,7 +161,7 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
             }
             await action.Invoke(tokenSource.Token).ConfigureAwait(false);
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         { }
         finally
         {
@@ -170,7 +172,7 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
             Console.CancelKeyPress -= CancelKeyPress;
         }
         return;
-        
+
         void CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
         {
             #pragma warning disable AccessToDisposedClosure
@@ -179,9 +181,9 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
             e.Cancel = true;
         }
     }
-    
+
     private static async Task<int> Main(string[] args) => await new CommandApp<DefaultCommand>().RunAsync(args).ConfigureAwait(false);
-    
+
     public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
     {
         ArgumentNullException.ThrowIfNull(context);
