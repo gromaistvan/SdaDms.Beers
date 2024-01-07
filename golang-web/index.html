@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Sörnyilvántartás</title>
+</head>
+<body>
+    <div style="width: 300px; float: left">
+        <form method="POST" action="/">
+            <p>
+                <label for="name">Sör neve</label>
+            </p>
+            <p>
+                <select id="name" name="id" style="width: 300px">{{range .Beers}}<option value="{{.ID}}" {{if eq .ID
+                        $.SelectedBeer.ID}}selected{{end}}>{{.Name}}</option>{{end}}</select>
+            </p>
+            <p>
+                <label for="tagline">Szlogen</label>
+            </p>
+            <p>
+                <input type="text" id="tagline" value="{{.SelectedBeer.Tagline}}" readonly style="width: 300px" />
+            </p>
+            <p>
+                <label for="description">Részletes leírás</label>
+            </p>
+            <p>
+                <textarea id="description" readonly wrap="hard" style="width: 300px; height: 200px; resize: none">{{.SelectedBeer.Description}}</textarea>
+            </p>
+            <p>
+                <label for="ibu">Keserűség (IBU)</label>
+            </p>
+            <p>
+                <progress id="ibu" max="150" value="{{.SelectedBeer.Ibu}}" style="width: 300px"></progress>
+            </p>
+            <p>
+                <table style="width: 300px">
+                    <caption>Összetevők</caption>
+                    <thead>
+                        <tr>
+                            <th>Összetevő</th>
+                            <th>Mennyiség</th>
+                            <th>Mértékegység</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .SelectedBeer.Ingredients.Malt}}<tr>
+                            <td>{{.Name}}</td>
+                            <td>{{.Amount.Value}}</td>
+                            <td>{{.Amount.Unit}}</td>
+                        </tr>{{end}}
+                    </tbody>
+                </table>
+            </p>
+        </form>
+    </div>
+    <div style="width: 300px; float: right">
+        <img src="{{.SelectedBeer.ImageURL}}" alt="{{.SelectedBeer.Name}}" style="width: 300px" />
+    </div>
+    <script>
+        document.getElementById('name').addEventListener('change', function () {
+            this.form.submit();
+        });
+    </script>
+</body>
+</html>
