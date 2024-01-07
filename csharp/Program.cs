@@ -1,8 +1,7 @@
-#pragma warning disable CA1812
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
@@ -14,22 +13,30 @@ using SixLabors.ImageSharp.Processing;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Spectre.Console.Rendering;
+using SdaDms.Beers.Properties;
 
 namespace SdaDms.Beers;
 
 public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
 {
+#pragma warning disable CA1812
+
     public sealed class Settings: CommandSettings
     {
         [CommandOption("-s|--service"), DefaultValue("https://api.punkapi.com/v2/beers"), Description("Service URL.")]
-        public string ServicePath { get; init; } = null!;
+        public string ServicePath { get; init; } = "https://api.punkapi.com/v2/beers";
 
         [CommandOption("-b|--background"), DefaultValue("default"), Description("Background color.")]
-        public string BackgroundName { get; init; } = null!;
+        public string BackgroundName { get; init; } = "default";
+
+        [CommandOption("-l|--langugage"), DefaultValue(null), Description("UI langugae.")]
+        public string? LanguageAlpha2 { get; init; } = null;
 
         public Color Background => Style.TryParse($"default on {BackgroundName}", out Style? style) ? style?.Background ?? Color.Default : Color.Default;
 
         public Color Foreground => Background.Blend(Color.Yellow, 1f);
+
+        public CultureInfo Language => LanguageAlpha2 is { Length: 2 } ? CultureInfo.GetCultureInfoByIetfLanguageTag(LanguageAlpha2) : CultureInfo.CurrentUICulture;
 
         public Uri ServiceUrl => new (ServicePath);
     }
@@ -56,14 +63,19 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
         public string? Image { get; init; }
     }
 
+#pragma warning restore CA1812
+
     private static readonly JsonSerializerOptions JsonOptions = new () { PropertyNameCaseInsensitive = true };
 
     private static async Task<List<Beer>> LoadAsync(Settings settings, CancellationToken token = default)
     {
-        using HttpClient client = new ();
-        Stream response = await client.GetStreamAsync(settings.ServiceUrl, token).ConfigureAwait(false);
-        await using ConfiguredAsyncDisposable _ = response.ConfigureAwait(false);
-        return await JsonSerializer.DeserializeAsync<List<Beer>>(response, JsonOptions, token).ConfigureAwait(false) ?? [];
+        return await AnsiConsole.Status().Spinner(Spinner.Known.Dots).StartAsync(Resources.Loading, async ctx =>
+        {
+            using HttpClient client = new ();
+            Stream response = await client.GetStreamAsync(settings.ServiceUrl, token).ConfigureAwait(false);
+            await using ConfiguredAsyncDisposable _ = response.ConfigureAwait(false);
+            return await JsonSerializer.DeserializeAsync<List<Beer>>(response, JsonOptions, token).ConfigureAwait(false) ?? [];
+        }).ConfigureAwait(false);
     }
 
     private static async Task<Beer?> ChooseAsync(IList<Beer>? beers, Settings settings, CancellationToken token = default)
@@ -79,17 +91,27 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
             .ConfigureAwait(false);
     }
 
+    /// <remarks>
+    ///     https://en.wikipedia.org/wiki/ANSI_escape_code#SGR_(Select_Graphic_Rendition)_parameters
+    /// </remarks>
     private static async Task AlternateScreenAsync(Func<Task> action)
     {
-        ControlCode switchScreen = new ("\u001b[?1049h\u001b[H"), returnScreen = new ("\u001b[?1049l");
-        AnsiConsole.Write(switchScreen);
-        try
+        if (AnsiConsole.Console.Profile.Capabilities.AlternateBuffer)
+        {
+            ControlCode switchScreen = new ("\u001b[?1049h\u001b[H"), returnScreen = new ("\u001b[?1049l");
+            AnsiConsole.Write(switchScreen);
+            try
+            {
+                await action.Invoke().ConfigureAwait(false);
+            }
+            finally
+            {
+                AnsiConsole.Write(returnScreen);
+            }
+        }
+        else
         {
             await action.Invoke().ConfigureAwait(false);
-        }
-        finally
-        {
-            AnsiConsole.Write(returnScreen);
         }
     }
 
@@ -165,21 +187,23 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
         { }
         finally
         {
-            if (OperatingSystem.IsWindows())
+            Console.CancelKeyPress -= CancelKeyPress;
+            if (OperatingSystem.IsWindows() && string.IsNullOrEmpty(title))
             {
                 Console.Title = title;
             }
-            Console.CancelKeyPress -= CancelKeyPress;
         }
         return;
 
+#pragma warning disable AccessToDisposedClosure
+
         void CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
         {
-            #pragma warning disable AccessToDisposedClosure
             tokenSource.Cancel();
-            #pragma warning restore AccessToDisposedClosure
             e.Cancel = true;
         }
+
+#pragma warning restore AccessToDisposedClosure
     }
 
     private static async Task<int> Main(string[] args) => await new CommandApp<DefaultCommand>().RunAsync(args).ConfigureAwait(false);
@@ -188,6 +212,8 @@ public sealed class DefaultCommand: AsyncCommand<DefaultCommand.Settings>
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(settings);
+
+        CultureInfo.CurrentUICulture = Resources.Culture = settings.Language;
         await CtrlBreakAsync(async token =>
         {
             IList<Beer> beers = await LoadAsync(settings, token).ConfigureAwait(false);
